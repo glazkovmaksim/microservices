@@ -6,6 +6,7 @@ import com.example.user_service.dto.UserDTO;
 import com.example.user_service.entity.User;
 import com.example.user_service.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
-    private WebClient webClient;
+    private WebClient.Builder webClientBuilder;
+
 
     @Override
     public User saveUser(User user) {
@@ -30,8 +32,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId).get();
         UserDTO userDTO = mapToUser(user);
 
-        DepartmentDTO departmentDTO = webClient.get()
-                .uri("http://localhost:8080/api/departments/" + user.getDepartmentId())
+        DepartmentDTO departmentDTO = webClientBuilder.build().get()
+                .uri("http://DEPARTMENT-SERVICE/api/departments/" + user.getDepartmentId())
                 .retrieve()
                 .bodyToMono(DepartmentDTO.class)
                 .block();
